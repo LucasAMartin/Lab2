@@ -10,50 +10,50 @@
 
 
 int main(int argc, char *argv[]) {
-    int n = 3; // Default size is 3
+    int size = 3; // Default size is 3
     if(argc > 1) {
-        n = atoi(argv[1]); // If a command line argument is passed, use it as the size
+        size = atoi(argv[1]); // If a command line argument is passed, use it as the size
     }
 
     key_t key = ftok("shmfile",65);
     int shmid = shmget(key, SHM_SIZE, 0666|IPC_CREAT);
-    char *str = (char*) shmat(shmid, (void*)0, 0);
+    char *board = (char*) shmat(shmid, (void*)0, 0);
 
-    str[1] = n; // Store the size of the board in shared memory
-    str[0] = '1'; // It's user1's turn at the beginning
-    memset(str+2, ' ', n*n); // Initialize the board with spaces
+    board[1] = size; // Store the size of the board in shared memory
+    board[0] = '1'; // It's user1's turn at the beginning
+    memset(board+2, ' ', size*size); // Initialize the board with spaces
 
     while(1) {
-    if(str[0] == '1') {
-        printBoard(str+2, n); // Print the board before making a move
-            if(checkWin(str+2, n, 'X')) {
+    if(board[0] == '1') {
+        printBoard(board+2, size); // Print the board before making a move
+            if(checkWin(board+2, size, 'X')) {
         printf("Player 1 wins!\n");
-        str[0] = '2';
+        board[0] = '2';
         break;
     }
-    if(checkWin(str+2, n, 'O')) {
+    if(checkWin(board+2, size, 'O')) {
         printf("Player 1 loses\n");
-        str[0] = '2';
+        board[0] = '2';
         break;
     }
-    if(checkDraw(str+2, n)) {
+    if(checkDraw(board+2, size)) {
         printf("It's a draw!\n");
-        str[0] = '2';
+        board[0] = '2';
         break;
     }
-        int x, y;
-        getMove(&x, &y, str, n); // Get a valid move
-        str[x*n+y+2] = 'X'; // User1 is X
-        str[0] = '2'; // Now it's user2's turn
+        int row, column;
+        getMove(&row, &column, board, size); // Get a valid move
+        board[row*size+column+2] = 'X'; // User1 is X
+        board[0] = '2'; // Now it's user2's turn
     }
-    if(str[0] == '2') {
+    if(board[0] == '2') {
         printf("Waiting for player 2... \n");
         }
-        while(str[0] == '2') {
+        while(board[0] == '2') {
             sleep(1); // Wait for the other user to make a move
         }
 }
-    shmdt(str);
+    shmdt(board);
 
     return 0;
 }
