@@ -1,3 +1,6 @@
+#include "tictactoe.h"
+#include <stdio.h>
+
 void printBoard(char *p, int s) {
     int i, j;
     // Print column headers
