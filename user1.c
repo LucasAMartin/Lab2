@@ -112,6 +112,16 @@ bool checkWin(char *board, int n, char player) {
     return win;
 }
 
+bool checkDraw(char *board, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (board[i*n+j] == ' ') {
+                return false; // If there's an empty space, it's not a draw
+            }
+        }
+    }
+    return true; // If we got here, all spaces are filled, so it's a draw
+}
 
 
 int main(int argc, char *argv[]) {
@@ -129,16 +139,23 @@ int main(int argc, char *argv[]) {
     memset(str+2, ' ', n*n); // Initialize the board with spaces
 
     while(1) {
-    if(checkWin(str+2, n, 'X')) {
+    if(str[0] == '1') {
+        printBoard(str+2, n); // Print the board before making a move
+            if(checkWin(str+2, n, 'X')) {
         printf("Player 1 wins!\n");
+        str[0] = '2';
         break;
     }
     if(checkWin(str+2, n, 'O')) {
         printf("Player 1 loses\n");
+        str[0] = '2';
         break;
     }
-    if(str[0] == '1') {
-        printBoard(str+2, n); // Print the board before making a move
+    if(checkDraw(str+2, n)) {
+        printf("It's a draw!\n");
+        str[0] = '2';
+        break;
+    }
         int x, y;
         getMove(&x, &y, str, n); // Get a valid move
         str[x*n+y+2] = 'X'; // User1 is X
