@@ -35,8 +35,8 @@ void printBoard(char *board, int size) {
 }
 
 
-// Function to get the player's move
-void getMove(int *row, int *column, char *board, int size) {
+// Function to make sure move is valid
+void validateMove(int *row, int *column, char *board, int size) {
     // Declare a character array to store the player's input
     char line[100];
 
