@@ -10,6 +10,7 @@
 
 int main(int argc, char *argv[]) {
 
+    // Comment explanations of these magic functions in user1.c file
     key_t key = ftok("shmfile",65);
     int shmid = shmget(key, SHM_SIZE, 0666|IPC_CREAT);
     char *board = (char*) shmat(shmid, (void*)0, 0);
@@ -47,7 +48,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    shmctl(shmid, IPC_RMID, NULL);
+    shmctl(shmid, IPC_RMID, NULL); // Clear the shared memory before exiting
 
     return 0;
 }

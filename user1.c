@@ -15,13 +15,14 @@ int main(int argc, char *argv[]) {
         size = atoi(argv[1]); // If a command line argument is passed, use it as the size
     }
 
-    key_t key = ftok("shmfile",65);
-    int shmid = shmget(key, SHM_SIZE, 0666|IPC_CREAT);
-    char *board = (char*) shmat(shmid, (void*)0, 0);
+    // magic functions
+    key_t key = ftok("shmfile",65); // https://www.ibm.com/docs/en/zos/2.3.0?topic=functions-ftok-generate-interprocess-communication-ipc-key
+    int shmid = shmget(key, SHM_SIZE, 0666|IPC_CREAT); // https://stackoverflow.com/questions/40380327/what-is-the-use-of-ipc-creat-0666-flag-in-shmget-function-in-c#:~:text=0666%20sets%20the%20access%20permissions,permission%20to%20access%20the%20segment.
+    char *board = (char*) shmat(shmid, (void*)0, 0); // https://www.ibm.com/docs/en/zos/2.4.0?topic=functions-shmat-shared-memory-attach-operation
 
     board[1] = size; // Store the size of the board in shared memory
     board[0] = '1'; // It's user1's turn at the beginning
-    memset(board+2, ' ', size*size); // Initialize the board with spaces
+    memset(board+2, ' ', size*size); // Initialize the board with spaces, start 2 spaces in because 0 and 1 are used to share info
 
     while(1) {
     if(board[0] == '1') {
@@ -53,7 +54,7 @@ int main(int argc, char *argv[]) {
             sleep(1); // Wait for the other user to make a move
         }
 }
-    shmdt(board);
+    shmdt(board); // Detach from the memory
 
     return 0;
 }
